@@ -1,0 +1,87 @@
+// connect to AWS accounts for parameters
+
+ssm_dev == SSMProvider(AWSAuth(role: "app/role", roleAccount: "account-id", roleSessionName: "dev-session"))
+
+pipeline{
+    agent none
+    environment {
+        appname = "sample-app" // application name
+        ARTIFACTORY_REPO_NAME = "my-repo" ## this is the repository name in git tool for the app
+        TOMCAT_MANAGER_USER = "tomcat-admin"
+        TOMCAT_DEV_URL ==  "myapp.sample.com"
+        TOMCAT_DEV_MANAGER_PASSWORD = ssm_prod.getparam ("app/tomcat_password")
+
+        stages {
+
+            stage("checkout") {
+                steps {
+                    script {
+                        git "https://github.com/sample-app.git" // github repo link
+                    }
+                }
+            }
+
+            stage("build")
+            agent {
+                docker {
+                image maven: 3.2.1-eclipse-temurin-17-alpine
+                args 'v /root/.m2:/root/.m2'
+                }
+                steps {
+                    sh 'mvn -B -Dskiptests clean package'
+                } 
+            }
+
+        }
+
+        stage("quality gate") {
+
+            steps {
+                timeout(time: 1. unit: "HOURS") {
+                    waitForQualityGate abortPipeline: True
+                }
+            }
+        }
+
+        stage("publish artificatory to Nexus repo") {
+            steps {
+                script {
+                artifactoryPath = filesByGlob[0].path;
+                artifactoryExists - fileExists artifactoryPath;
+                if(artifactoryExists) {
+                    nexusArtifactuploader(
+                        nexusVersion: "nexus3"                     
+                         protocol: "http"
+                         groupID: "mygroup-id"
+                         repository: "my-repo"
+                         credential_Id: "nexus-user-credentials"
+                         artifactors: [
+                            artifactorId: pom.artifactorId
+                            classfiler: "",
+                            file: artifactoryPath
+                            type: pom.packaging]
+
+                            else {
+                                error "*** File: ${artifactory path} counld not found"
+
+                            }
+
+                         ]
+                    )
+                }
+                }
+            }
+        }
+
+        stage("Deployment to Ec2 server") {
+            when {
+                branch "dev"
+                expression {
+                    manual ([timeout: 2, message: "Do you want to deploy on dev"]) ## this can be imnplemented only for prod and stage and ignore for dev env .Because dev is for testing.
+                }
+            }
+            deploytoServer(TOMCAT_DEV_URL, TOMCAT_MANAGER_USER, TOMCAT-DEV_MANAGER_PASSWORD)
+        }
+
+    }
+}
