@@ -7,8 +7,8 @@ module "app-server" {
     security_groups = [
          var.sg1,
          var.sg2
-         ## we can create security groups and assign here
-    ]
+        ]         ## we can create security groups and assign here
+    
     key_name = "my_ssh_key"
     subnet = var.subnet_id
     env_type = var.env_type

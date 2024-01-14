@@ -23,6 +23,7 @@ variable "availability_zone" {
 variable = "vpc" {
     type = string
 }
+
 variable "ami" {
     type = string
 }

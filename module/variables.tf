@@ -1,3 +1,5 @@
+
+
 variable "env_type" {
     description  = "environment name : dev/test/prod"
     type = strin
@@ -40,10 +42,12 @@ variable "lb_subnets" {
 variable "lb_security_groups" {
     type = set(string)
 }
+
 variable "lb_timeout_seconds" {
     type = number
     default = 400
 }
+
 variable "monitoring" {
     type =  string
     default = "N"

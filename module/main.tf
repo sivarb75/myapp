@@ -1,9 +1,10 @@
+
 resource "aws_instance" "myapp_server" {
     ami = var.ami_image
     instance_type = var.instance_type
     availability_zone = var.availability_zone
     subnet_id = var.subnet_id
-    associate_public_ip_address  = false ## we will use private IP of the instance because public IP will change everytime you change and If we use Elastic IP it is chargebale though you won't use.
+    associate_public_ip_address  = false ## using private IP for this instance 
     key_name = var.key_name
 
     tags = {
@@ -24,4 +25,5 @@ resource "aws_instance" "myapp_server" {
            "role" = "storage"
         )
     }
+
 }

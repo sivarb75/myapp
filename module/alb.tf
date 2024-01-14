@@ -1,4 +1,6 @@
+
 # application load balancer to maintain availability
+
 resource "aws_alb" "web_app_alb" {
     name = "task alb"
     subnets = var.lb_subnets
@@ -18,6 +20,7 @@ resource "aws_alb" "web_app_alb" {
 }
 
 # target group 
+
 resource "aws_alb_target_group" "aws_alb_target_group" {
     name = "my-target-group"
     port = "8080"
@@ -43,6 +46,7 @@ _
 }
 
 #listeners
+
 
 resource "aws_lb_listner" "my_listner" {
     loadbalancer_arn  = aws_alb.web_app_alb.loadbalancer_arn

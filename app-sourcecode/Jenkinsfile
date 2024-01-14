@@ -80,7 +80,7 @@ pipeline{
                     manual ([timeout: 2, message: "Do you want to deploy on dev"]) ## this can be imnplemented only for prod and stage and ignore for dev env .Because dev is for testing.
                 }
             }
-            deploytoServer(TOMCAT_DEV_URL, TOMCAT_MANAGER_USER, TOMCAT-DEV_MANAGER_PASSWORD)
+            deploytoServer(TOMCAT_DEV_URL, TOMCAT_MANAGER_USER, TOMCAT_DEV_MANAGER_PASSWORD)
         }
 
     }

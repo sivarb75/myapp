@@ -7,7 +7,9 @@ terraform  {
         }
     }
 
+
 ## statefile management using S3 bucket
+
 backend "s3"
 {
     bucket = "sample-bucket"
